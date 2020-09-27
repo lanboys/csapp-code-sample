@@ -903,8 +903,8 @@ int open_clientfd(char *hostname, char *port) {
         /* Connect to the server */
         if (connect(clientfd, p->ai_addr, p->ai_addrlen) != -1)
             break; /* Success */
-        if (close(clientfd) <
-            0) { /* Connect failed, try another */  //line:netp:openclientfd:closefd
+        /* Connect failed, try another */  //line:netp:openclientfd:closefd
+        if (close(clientfd) < 0) {
             fprintf(stderr, "open_clientfd: close failed: %s\n", strerror(errno));
             return -1;
         }
