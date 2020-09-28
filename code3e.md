@@ -156,3 +156,96 @@ int main(int argc, char **argv) {
     return 0;
 }
 ```
+
+##### 11.6 tiny web 服务器
+###### 客户端使用例子(不能直接用上一节的echoclient.c访问，需要改造)
+> 注意访问的资源路径, 可把资源拷贝到执行文件路径下
+
+简单访问
+```shell script
+root@ubuntu1804:~$ telnet localhost 9898
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+GET / HTTP/1.1
+
+HTTP/1.0 200 OK
+Server: Tiny Web Server
+Content-length: 165
+Content-type: text/html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tiny-web</title>
+</head>
+<body>
+    <h1>Welcome to Tiny Web Server</h1>
+</body>
+</html>
+Connection closed by foreign host.
+```
+
+文本访问
+```shell script
+root@ubuntu1804:~$ telnet localhost 9898
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+GET /../code3e/netp/tiny/res/3.txt HTTP/1.1
+
+HTTP/1.0 200 OK
+Server: Tiny Web Server
+Content-length: 31
+Content-type: text/plain
+
+Welcome to Tiny Web Server~~~
+Connection closed by foreign host.
+```
+
+访问地址不对的图片
+```shell script
+root@ubuntu1804:~$ telnet localhost 9898
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+GET /res/1.jpg HTTP/1.1
+
+HTTP/1.0 404 Not found
+Content-type: text/html
+
+<html><title>Tiny Error</title><body bgcolor=ffffff>
+404: Not found
+<p>Tiny couldn't find this file: ./res/1.jpg
+<hr><em>The Tiny Web server</em>
+Connection closed by foreign host.
+```
+
+带请求头的访问html
+```shell script
+root@ubuntu1804:~$ telnet localhost 9898
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+GET /../code3e/netp/tiny/res/home.html HTTP/1.1
+header1: value1
+header2: value2
+
+HTTP/1.0 200 OK
+Server: Tiny Web Server
+Content-length: 165
+Content-type: text/html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tiny-web</title>
+</head>
+<body>
+    <h1>Welcome to Tiny Web Server</h1>
+</body>
+</html>
+Connection closed by foreign host.
+```

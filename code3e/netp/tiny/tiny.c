@@ -38,9 +38,8 @@ int main(int argc, char **argv) {
     listenfd = Open_listenfd(argv[1]);
     while (1) {
         clientlen = sizeof(clientaddr);
-        connfd = Accept(listenfd, (SA * ) & clientaddr, &clientlen); //line:netp:tiny:accept
-        Getnameinfo((SA * ) & clientaddr, clientlen, hostname, MAXLINE,
-                    port, MAXLINE, 0);
+        connfd = Accept(listenfd, (SA *) &clientaddr, &clientlen); //line:netp:tiny:accept
+        Getnameinfo((SA *) &clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE, 0);
         printf("Accepted connection from (%s, %s)\n", hostname, port);
         doit(connfd);                                             //line:netp:tiny:doit
         Close(connfd);                                            //line:netp:tiny:close
@@ -128,6 +127,7 @@ int parse_uri(char *uri, char *filename, char *cgiargs) {
         strcpy(filename, ".");                           //line:netp:parseuri:beginconvert1
         strcat(filename, uri);                           //line:netp:parseuri:endconvert1
         if (uri[strlen(uri) - 1] == '/')                   //line:netp:parseuri:slashcheck
+            // 将被访问的文件放在tiny同级文件夹下，注意是执行文件目录下
             strcat(filename, "home.html");               //line:netp:parseuri:appenddefault
         return 1;
     } else {  /* Dynamic content */                        //line:netp:parseuri:isdynamic
@@ -204,8 +204,7 @@ void serve_dynamic(int fd, char *filename, char *cgiargs) {
     if (Fork() == 0) { /* Child */ //line:netp:servedynamic:fork
         /* Real server would set all CGI vars here */
         setenv("QUERY_STRING", cgiargs, 1); //line:netp:servedynamic:setenv
-        Dup2(fd,
-             STDOUT_FILENO);         /* Redirect stdout to client */ //line:netp:servedynamic:dup2
+        Dup2(fd, STDOUT_FILENO);    /* Redirect stdout to client */ //line:netp:servedynamic:dup2
         Execve(filename, emptylist, environ); /* Run CGI program */ //line:netp:servedynamic:execve
     }
     Wait(NULL); /* Parent waits for and reaps child */ //line:netp:servedynamic:wait
